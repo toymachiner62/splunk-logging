@@ -1,0 +1,7 @@
+.classpath
+.project
+.settings
+/target/
+
+# The log file that is produced from the unit tests
+contextName_IS_UNDEFINED.log

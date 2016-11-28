@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!-- STDOUT appender -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-20(%d{HH:mm:ss.SSS} [%thread]) %-50(%-5level %logger:) %msg%n</pattern>
+    </encoder>
+    
+    <!-- Show debug in stdout -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+  	  <level>DEBUG</level>
+	</filter>
+  </appender>
+  
+  <!-- FILE appender -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${contextName}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>${contextName}.%d{yyyy-MM-dd}.log</fileNamePattern>
+	  <!-- each file should be at most 100MB -->
+      <maxFileSize>100MB</maxFileSize>
+      <!-- keep 30 days' worth of history capped at 3GB total size -->
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+    
+    <encoder>
+      <pattern>%-20(%d{HH:mm:ss.SSS} [%thread]) %-50(%-5level %logger:) %msg%n</pattern>
+    </encoder>
+    
+    <!-- Show info in file -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+  	  <level>INFO</level>
+	</filter>
+  </appender>
+  
+  <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
+	<url>http://example.com:8088/services/collector</url>
+	<token>1234567890</token>
+	<disableCertificateValidation>true</disableCertificateValidation>
+	<batch_size_count>1</batch_size_count>
+	<layout class="ch.qos.logback.classic.PatternLayout">
+	  <pattern>%msg</pattern>
+	</layout>
+  </appender>
+
+	<logger name="splunk.logger" additivity="false" level="INFO">
+        <appender-ref ref="SPLUNK"/>
+    </logger>
+
+  <!-- Set the root level to trace. We'll filter on the appenders -->
+  <root level="trace">
+  	<appender-ref ref="SPLUNK" />
+  </root>
+  
+</configuration>
